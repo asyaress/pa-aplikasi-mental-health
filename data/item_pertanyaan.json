@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "id_set_pertanyaan": 1,
+    "nomor_urut": 1,
+    "teks_pertanyaan": "Saya merasa ceria dan bersemangat"
+  },
+  {
+    "id": 2,
+    "id_set_pertanyaan": 1,
+    "nomor_urut": 2,
+    "teks_pertanyaan": "Saya merasa tenang dan rileks"
+  },
+  {
+    "id": 3,
+    "id_set_pertanyaan": 1,
+    "nomor_urut": 3,
+    "teks_pertanyaan": "Saya merasa aktif dan energik"
+  },
+  {
+    "id": 4,
+    "id_set_pertanyaan": 1,
+    "nomor_urut": 4,
+    "teks_pertanyaan": "Saya bangun dengan segar dan beristirahat dengan baik"
+  },
+  {
+    "id": 5,
+    "id_set_pertanyaan": 1,
+    "nomor_urut": 5,
+    "teks_pertanyaan": "Kehidupan sehari-hari saya penuh dengan hal yang menarik"
+  }
+]

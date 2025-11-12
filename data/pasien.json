@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "id_user": 4,
+    "id_dokter": 1,
+    "nama": "Ahmad Rizki",
+    "jenis_kelamin": "Laki-laki",
+    "pendidikan": "SMA",
+    "pekerjaan": "Mahasiswa",
+    "diagnosa": "Gangguan Kecemasan Umum",
+    "id_set_pertanyaan": 1
+  },
+  {
+    "id": 2,
+    "id_user": 5,
+    "id_dokter": 1,
+    "nama": "Siti Nurhaliza",
+    "jenis_kelamin": "Perempuan",
+    "pendidikan": "S1",
+    "pekerjaan": "Karyawan Swasta",
+    "diagnosa": "Depresi Ringan",
+    "id_set_pertanyaan": 1
+  }
+]

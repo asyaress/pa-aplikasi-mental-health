@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "nama_role": "Admin"
+  },
+  {
+    "id": 2,
+    "nama_role": "Dokter"
+  },
+  {
+    "id": 3,
+    "nama_role": "Pasien"
+  }
+]

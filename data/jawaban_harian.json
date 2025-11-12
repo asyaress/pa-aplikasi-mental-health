@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "id_pasien": 1,
+    "tanggal": "2025-01-01",
+    "jawaban_1": 3,
+    "jawaban_2": 4,
+    "jawaban_3": 3,
+    "jawaban_4": 2,
+    "jawaban_5": 4,
+    "total_raw": 16,
+    "total_percentage": 64,
+    "kategori": "kuning"
+  },
+  {
+    "id": 2,
+    "id_pasien": 1,
+    "tanggal": "2025-01-02",
+    "jawaban_1": 4,
+    "jawaban_2": 4,
+    "jawaban_3": 3,
+    "jawaban_4": 3,
+    "jawaban_5": 4,
+    "total_raw": 18,
+    "total_percentage": 72,
+    "kategori": "hijau"
+  }
+]

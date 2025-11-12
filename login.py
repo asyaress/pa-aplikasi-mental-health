@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
+from auth import AuthBackend
 
 
 class MobileLoginAppFlexible:
@@ -9,7 +10,7 @@ class MobileLoginAppFlexible:
 
         width, height = 393, 852
 
-        self.window = ctk.CTk() # untuk munculkan windows
+        self.window = ctk.CTk()
         self.window.title("Login - Mental Health App")
         self.window.geometry(f"{width}x{height}")
         self.window.resizable(False, False)
@@ -17,6 +18,8 @@ class MobileLoginAppFlexible:
 
         self.width = width
         self.height = height
+
+        self.auth = AuthBackend()
         self.create_ui()
 
     def create_ui(self):
@@ -80,12 +83,12 @@ class MobileLoginAppFlexible:
         # Email
         email_label = ctk.CTkLabel(
             content,
-            text="Email Address",
+            text="Username",
             font=("Arial Medium", 12),
             text_color="#333333",
             anchor="w",
         )
-        email_label.pack(anchor="w", pady=(0, 6)) # untuk ngunci ukuran frame
+        email_label.pack(anchor="w", pady=(0, 6))  # untuk ngunci ukuran frame
 
         email_frame = ctk.CTkFrame(
             content, fg_color="#f5f5f5", corner_radius=8, height=48
@@ -93,12 +96,12 @@ class MobileLoginAppFlexible:
         email_frame.pack(fill="x", pady=(0, 18))
         email_frame.pack_propagate(False)
 
-        email_icon_label = ctk.CTkLabel(email_frame, text="📧", font=("Arial", 14))
+        email_icon_label = ctk.CTkLabel(email_frame, text="👤", font=("Arial", 14))
         email_icon_label.pack(side="left", padx=(12, 8))
 
         self.email_entry = ctk.CTkEntry(
             email_frame,
-            placeholder_text="ini tempat masukkan email kds",
+            placeholder_text="Masukkan username",
             font=("Arial", 12),
             fg_color="transparent",
             border_width=0,
@@ -128,7 +131,7 @@ class MobileLoginAppFlexible:
 
         self.password_entry = ctk.CTkEntry(
             password_frame,
-            placeholder_text="password dari dokter mu",
+            placeholder_text="Masukkan password",
             font=("Arial", 12),
             show="●",
             fg_color="transparent",
@@ -151,41 +154,89 @@ class MobileLoginAppFlexible:
         )
         login_button.pack(fill="x", pady=(0, 15))
 
-        # Forgot password
-        forgot_label = ctk.CTkLabel(
+        # Info untuk testing (opsional, bisa dihapus nanti)
+        info_label = ctk.CTkLabel(
             content,
-            text="Lupa password?",
-            font=("Arial", 11),
-            text_color="#3b5998",
-            cursor="hand2",
+            text="💡 Demo: admin / admin123",
+            font=("Arial", 10),
+            text_color="#999999",
         )
-        forgot_label.pack(pady=(5, 0))
-        forgot_label.bind("<Button-1>", lambda e: self.forgot_password())
+        info_label.pack(pady=(10, 0))
 
     def login(self):
-        email = self.email_entry.get()
+        username = self.email_entry.get().strip()
         password = self.password_entry.get()
 
-        if not email or not password:
-            messagebox.showerror("Error", "Mohon isi semua field!")
+        if not username or not password:
+            messagebox.showerror("Error", "Mohon isi username dan password!")
             return
 
-        if "@" not in email:
-            messagebox.showerror("Error", "Format email tidak valid!")
-            return
-
-        print("Login attempt:")
-        print(f"Email: {email}")
+        print("=" * 50)
+        print("Mencoba login...")
+        print(f"Username: {username}")
         print(f"Password: {'*' * len(password)}")
 
-        messagebox.showinfo("Success", f"Login berhasil!\nWelcome, {email}")
+        user = self.auth.login(username, password)
 
-        # TODO: koneksi DB, validasi, redirect dashboard
+        if user:
+            print("\n✅ LOGIN BERHASIL!")
+            print(f"ID User: {user['id']}")
+            print(f"Nama: {user.get('nama', 'N/A')}")
+            print(f"Username: {user['username']}")
+            print(f"Role: {user['role_name']} (ID: {user['id_role']})")
 
-    def forgot_password(self):
-        messagebox.showinfo(
-            "Forgot Password", "Fitur reset password akan segera hadir!"
-        )
+            # Tampilkan data tambahan sesuai role
+            if user["id_role"] == 2:  # Dokter
+                print(f"Spesialis: {user.get('spesialis', 'N/A')}")
+            elif user["id_role"] == 3:  # Pasien
+                print(f"Diagnosa: {user.get('diagnosa', 'N/A')}")
+
+            print("=" * 50)
+
+            messagebox.showinfo(
+                "Login Berhasil",
+                f"Selamat datang, {user.get('nama', user['username'])}!\n\n"
+                f"Role: {user['role_name']}",
+            )
+
+            self.redirect_dashboard(user)
+
+        else:
+            # Login gagal
+            print("\n❌ LOGIN GAGAL!")
+            print("Username atau Password salah!")
+            print("=" * 50)
+
+            messagebox.showerror(
+                "Login Gagal",
+                "Username atau Password salah!\n\n"
+                "Silakan coba lagi atau hubungi admin.",
+            )
+
+    def redirect_dashboard(self, user):
+        role_id = user["id_role"]
+        role_name = user["role_name"]
+
+        print(f"\n→ Redirect ke Dashboard {role_name}...")
+
+        if role_id == 1:
+            # Admin Dashboard
+            print("  Membuka Dashboard Admin...")
+            # TODO: self.open_admin_dashboard(user)
+
+        elif role_id == 2:
+            # Dokter Dashboard
+            print("  Membuka Dashboard Dokter...")
+            # TODO: self.open_dokter_dashboard(user)
+
+        elif role_id == 3:
+            # Pasien Dashboard
+            print("  Membuka Dashboard Pasien...")
+            # TODO: self.open_pasien_dashboard(user)
+
+        else:
+            print("Role tidak dikenali!")
+            messagebox.showerror("Error", "Role user tidak valid!")
 
     def run(self):
         self.window.mainloop()

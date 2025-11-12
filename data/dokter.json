@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "id_user": 2,
+    "nama": "Dr. Budi Santoso, Sp.KJ",
+    "spesialis": "Psikiater"
+  },
+  {
+    "id": 2,
+    "id_user": 3,
+    "nama": "Dr. Siti Aminah, M.Psi",
+    "spesialis": "Psikolog Klinis"
+  }
+]
