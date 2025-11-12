@@ -26,7 +26,7 @@ class MobileLoginAppFlexible:
         main_container = ctk.CTkFrame(self.window, fg_color="white")
         main_container.pack(fill="both", expand=True)
 
-        canvas_height = int(self.height * 0.35)  # 35% dari tinggi layar
+        canvas_height = int(self.height * 0.35)
         canvas = ctk.CTkCanvas(
             main_container,
             width=self.width,
@@ -36,7 +36,6 @@ class MobileLoginAppFlexible:
         )
         canvas.pack(side="top", fill="x")
 
-        # Lingkaran dekoratif
         circle1_size = int(self.width * 0.95)
         canvas.create_oval(
             -int(self.width * 0.2),
@@ -57,11 +56,9 @@ class MobileLoginAppFlexible:
             outline="",
         )
 
-        # Content frame (tanpa scroll bar)
         content = ctk.CTkFrame(main_container, fg_color="white")
         content.pack(fill="both", expand=True, padx=30, pady=10)
 
-        # Welcome text
         welcome_label = ctk.CTkLabel(
             content,
             text="Welcome Back,",
@@ -80,7 +77,6 @@ class MobileLoginAppFlexible:
         )
         subtitle_label.pack(anchor="w", pady=(0, 25))
 
-        # Email
         email_label = ctk.CTkLabel(
             content,
             text="Username",
@@ -88,7 +84,7 @@ class MobileLoginAppFlexible:
             text_color="#333333",
             anchor="w",
         )
-        email_label.pack(anchor="w", pady=(0, 6))  # untuk ngunci ukuran frame
+        email_label.pack(anchor="w", pady=(0, 6))
 
         email_frame = ctk.CTkFrame(
             content, fg_color="#f5f5f5", corner_radius=8, height=48
@@ -110,7 +106,6 @@ class MobileLoginAppFlexible:
         )
         self.email_entry.pack(side="left", fill="both", expand=True, padx=(0, 12))
 
-        # Password
         password_label = ctk.CTkLabel(
             content,
             text="Password",
@@ -141,7 +136,6 @@ class MobileLoginAppFlexible:
         )
         self.password_entry.pack(side="left", fill="both", expand=True, padx=(0, 12))
 
-        # Login button
         login_button = ctk.CTkButton(
             content,
             text="Log in",
@@ -154,10 +148,9 @@ class MobileLoginAppFlexible:
         )
         login_button.pack(fill="x", pady=(0, 15))
 
-        # Info untuk testing (opsional, bisa dihapus nanti)
         info_label = ctk.CTkLabel(
             content,
-            text="💡 Demo: admin / admin123",
+            text="Demo: pasien1 / pasien123",
             font=("Arial", 10),
             text_color="#999999",
         )
@@ -179,7 +172,7 @@ class MobileLoginAppFlexible:
         user = self.auth.login(username, password)
 
         if user:
-            print("\n✅ LOGIN BERHASIL!")
+            print("\nLOGIN BERHASIL!")
             print(f"ID User: {user['id']}")
             print(f"Nama: {user.get('nama', 'N/A')}")
             print(f"Username: {user['username']}")
@@ -189,6 +182,7 @@ class MobileLoginAppFlexible:
             if user["id_role"] == 2:  # Dokter
                 print(f"Spesialis: {user.get('spesialis', 'N/A')}")
             elif user["id_role"] == 3:  # Pasien
+                print(f"ID Pasien: {user.get('id_pasien', 'N/A')}")
                 print(f"Diagnosa: {user.get('diagnosa', 'N/A')}")
 
             print("=" * 50)
@@ -202,8 +196,7 @@ class MobileLoginAppFlexible:
             self.redirect_dashboard(user)
 
         else:
-            # Login gagal
-            print("\n❌ LOGIN GAGAL!")
+            print("\nLOGIN GAGAL!")
             print("Username atau Password salah!")
             print("=" * 50)
 
@@ -220,23 +213,48 @@ class MobileLoginAppFlexible:
         print(f"\n→ Redirect ke Dashboard {role_name}...")
 
         if role_id == 1:
-            # Admin Dashboard
             print("  Membuka Dashboard Admin...")
             # TODO: self.open_admin_dashboard(user)
 
         elif role_id == 2:
-            # Dokter Dashboard
             print("  Membuka Dashboard Dokter...")
             # TODO: self.open_dokter_dashboard(user)
 
         elif role_id == 3:
-            # Pasien Dashboard
             print("  Membuka Dashboard Pasien...")
-            # TODO: self.open_pasien_dashboard(user)
+            self.open_pasien_dashboard(user)
 
         else:
-            print("Role tidak dikenali!")
+            print("  Role tidak dikenali!")
             messagebox.showerror("Error", "Role user tidak valid!")
+
+    def open_pasien_dashboard(self, user):
+        try:
+            from pasien_dashboard import PasienDashboard
+
+            print("\nMembuka Pasien Dashboard...")
+            print(f"   User: {user.get('nama')}")
+            print(f"   ID Pasien: {user.get('id_pasien')}")
+
+            self.window.withdraw()
+
+            dashboard = PasienDashboard(user)
+            dashboard.run()
+
+            print("\n👋 Dashboard ditutup. Menutup aplikasi...")
+            self.window.destroy()
+
+        except ImportError as e:
+            print(f"\nError: File pasien_dashboard.py tidak ditemukan!")
+            print(f"   Detail: {e}")
+            messagebox.showerror(
+                "Error",
+                "File dashboard pasien tidak ditemukan!\n\n"
+                "Pastikan file pasien_dashboard.py ada di folder yang sama.",
+            )
+            self.window.deiconify()
+        except Exception as e:
+            self.window.deiconify()
 
     def run(self):
         self.window.mainloop()
