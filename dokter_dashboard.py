@@ -1,0 +1,223 @@
+import customtkinter as ctk
+from tkinter import messagebox
+from PIL import Image
+
+class dokter2Dashboard:
+    def __init__(self, user):
+        ctk.set_appearance_mode("light")
+        ctk.set_default_color_theme("blue")
+
+        self.window = ctk.CTk()
+        self.window.title("dashboard dokter ni kids")
+        self.window.geometry("1200x700")
+        self.window.configure(fg_color="#f8f9fa")
+
+        self.user = user 
+        
+        # Data Pasien (Tetap)
+        self.patients_data = [
+            ["Alya", "Gangguan Kecemasan", "Pelajar (SMA)", "Memadai"],
+            ["Bella", "Bipolar", "Mahasiswa", "Rendah"],
+            ["Rafi", "Anxiety", "Pekerja Kontrak", "Berisiko"],
+            ["Nisa", "OCD", "Pekerja Lepas", "Rendah"],
+            ["Andi", "Skizofrenia", "Sedang Mencari Kerja", "Rendah"],
+        ]
+
+        # Mendefinisikan lebar kolom dalam bobot (weight) untuk grid.
+        # HARUS INTEGER (angka bulat) untuk grid_columnconfigure.
+        # [12, 25, 15, 13, 5] adalah hasil kali 10 dari [1.2, 2.5, 1.5, 1.3, 0.5]
+        self.col_weights = [12, 25, 15, 13, 5] # <--- PERBAIKAN UTAMA
+        
+        self.build_ui()
+
+    def build_ui(self):
+        # 1. Sidebar (Kiri)
+        self.sidebar=ctk.CTkFrame(self.window, fg_color="#ffffff", width = 65, corner_radius=0)
+        self.sidebar.pack(side="left", fill="y", padx =0, pady=0)
+
+        # Menu Sidebar
+        ctk.CTkLabel(self.sidebar, text="♾️", font=("Arial", 30), text_color="#007bff").pack(pady=(30, 20))
+        ctk.CTkButton(self.sidebar, text="➕", width=50, height=50, text_color="#000000", fg_color="#ffffff", 
+                      hover_color="#0e98f5", corner_radius=10).pack(pady=10)
+        
+        menus = ["🏠", "🗓", "💬", "⏱", "⚙️","↩️"]
+        for icon in menus:
+            # Menggunakan anchor="center" untuk menengahkan ikon
+            label = ctk.CTkButton(self.sidebar, text=icon, font=("Arial", 20), text_color="#000000", fg_color="transparent", 
+                                  hover_color="#0e98f5", width=50, height=50, corner_radius=10)
+            label.pack(pady=18)
+
+        # 2. Main Content (Kanan)
+        self.main_content = ctk.CTkFrame(self.window, fg_color="#f8f9fa")
+        self.main_content.pack(side="right", fill="both", expand=True, padx=20, pady=20)
+        
+        # 3. ACTION BAR (Wadah untuk Search dan Ikon Aksi)
+        self.action_bar = ctk.CTkFrame(self.main_content, fg_color="#ffffff", height=60, corner_radius=10)
+        self.action_bar.pack(side="top", fill="x", pady=(0, 15))
+
+        # 3a. Bagian Kiri (Search)
+        self.left_action = ctk.CTkFrame(self.action_bar, fg_color="transparent")
+        self.left_action.pack(side="left", padx=15, pady=10, fill="y") 
+
+        self.search_entry = ctk.CTkEntry(self.left_action, placeholder_text="🔍 Cari Pasien...", width=250, height=35, 
+                                         border_width=1, border_color="#ddd", fg_color="#f9f9f9")
+        self.search_entry.pack(side="left")
+        self.search_entry.bind("<Return>", self.enter_pressed)
+        
+        ctk.CTkLabel(self.left_action, text="4 Terpilih", text_color="#3B8ED0", font=("Arial Bold", 12)).pack(side="left", padx=15)
+
+        # 3b. Bagian Kanan (Icons Aksi)
+        right_action = ctk.CTkFrame(self.action_bar, fg_color="transparent")
+        right_action.pack(side="right", padx=15, fill="y") 
+        
+        ctk.CTkLabel(right_action, text="1 - 10 of 52", text_color="#555", font=("Arial", 12)).pack(side="left", padx=(0, 15))
+        ctk.CTkLabel(right_action, text="< >", text_color="#555", font=("Arial Bold", 14)).pack(side="left", padx=(0, 15))
+        
+        def create_action_handler(icon_text):
+            def handler():
+                pass 
+            return handler
+        
+        for ic in ["Y", "🖨️", "⬇️", "⤢"]:
+             ctk.CTkButton(right_action, text=ic, width=35, height=35, fg_color="transparent", 
+                          text_color="#555", hover_color="#eee", font=("Arial", 16),
+                          command=create_action_handler(ic)).pack(side="left", padx=2)
+
+        # 4. Scrollable Frame untuk Tabel 
+        self.table_scroll_frame = ctk.CTkScrollableFrame(self.main_content, fg_color="#ffffff", corner_radius=10)
+        self.table_scroll_frame.pack(side="top", fill="both", expand=True, pady=(0, 0))
+
+        # Tabel
+        self.render_table(self.patients_data)
+
+    def create_detail_handler(self, row_data):
+        def handler():
+            self.view_detail(row_data)
+        return handler
+
+    # --- FUNGSI RENDER_TABLE ---
+    def render_table(self, data):
+        for widget in self.table_scroll_frame.winfo_children():
+            widget.destroy()
+
+        headers = ["Nama Pasien", "Diagnosa", "Jenis", "Kategori", "Aksi"]
+
+        # Konfigurasi Grid Weight di frame scrollable agar kolom melebar
+        # Menggunakan nilai INTEGER (sudah diperbaiki di __init__)
+        for i, weight in enumerate(self.col_weights):
+            self.table_scroll_frame.grid_columnconfigure(i, weight=weight)
+            
+        # 1. Frame Header
+        header_row = ctk.CTkFrame(self.table_scroll_frame, fg_color="#f1f1f1", height=40, corner_radius=0)
+        # Tempatkan header_row merentang seluruh lebar (columnspan)
+        header_row.grid(row=0, column=0, columnspan=len(headers), sticky="ew", pady=(0, 1))
+
+        # Konfigurasi Grid Weight di header_row agar label di dalamnya memiliki lebar yang sama dengan kolom utama
+        for i, weight in enumerate(self.col_weights):
+            header_row.grid_columnconfigure(i, weight=weight)
+            
+        for i, h in enumerate(headers):
+            label = ctk.CTkLabel(header_row, text=h,
+                                 font=("Arial bold", 13),
+                                 text_color="black",
+                                 anchor="w" 
+                                 )
+            
+            # Pengaturan Padding dan Sticky untuk Header
+            padx_left = 15 if i == 0 else 5 # Padding lebih besar di kiri kolom pertama
+            padx_right = 15 if i == len(headers) - 1 else 15 # Padding lebih besar di kanan kolom terakhir
+
+            # Menggunakan sticky="ew" untuk header label
+            label.grid(row=0, column=i, sticky="ew", padx=(padx_left, padx_right), pady=5)
+
+
+        # 2. Isi Tabel
+        for row_index, row_data in enumerate(data):
+            row_frame = ctk.CTkFrame(self.table_scroll_frame, fg_color="#ffffff", height=45, corner_radius=0)
+            # Tempatkan row_frame di grid, span seluruh kolom
+            row_frame.grid(row=row_index + 1, column=0, columnspan=len(headers), sticky="ew", pady=(0, 1))
+            
+            # Konfigurasi Grid Weight di row_frame agar konten di dalamnya sejajar
+            for i, weight in enumerate(self.col_weights):
+                row_frame.grid_columnconfigure(i, weight=weight)
+            
+            # Kolom 0: Nama Pasien (Sticky W)
+            name_label = ctk.CTkLabel(row_frame, text=row_data[0], font=("Arial Bold", 13), anchor="w")
+            name_label.grid(row=0, column=0, sticky="w", padx=(15, 5), pady=5)
+
+            # Kolom 1: Diagnosa (Sticky W)
+            diag_label = ctk.CTkLabel(row_frame, text=row_data[1], anchor="w", font=("Arial", 13))
+            diag_label.grid(row=0, column=1, sticky="w", padx=5, pady=5)
+            
+            # Kolom 2: Jenis (Sticky W)
+            jenis_label = ctk.CTkLabel(row_frame, text=row_data[2], anchor="w", font=("Arial", 13))
+            jenis_label.grid(row=0, column=2, sticky="w", padx=5, pady=5)
+
+            # Kolom 3: Kategori (Badge) (Sticky W)
+            badge_color = self.badge_colour(row_data[3])
+            
+            badge_label = ctk.CTkLabel(row_frame, text=row_data[3], 
+                                       fg_color=badge_color, corner_radius=6,
+                                       font=("Arial Bold", 12), text_color="#1f2937", 
+                                       width=80, 
+                                       anchor="center"
+                                       )
+            # Sticky="w" agar badge rata kiri di kolomnya
+            badge_label.grid(row=0, column=3, sticky="w", padx=5, pady=5) 
+            
+            # Kolom 4: Tombol Aksi (Tombol Detail) (Sticky E)
+            detail_button = ctk.CTkButton(row_frame, text="👁",
+                                          text_color="#01030E",
+                                          width=30, height=30,
+                                          fg_color="transparent",
+                                          hover_color="#eee",
+                                          font=("Arial", 16),
+                                          command=self.create_detail_handler(row_data)
+                                          )
+            # Sticky "e" (East) agar tombol rata kanan di kolom Aksi
+            detail_button.grid(row=0, column=4, sticky="e", padx=(5, 15), pady=5) 
+            
+    # --- FUNGSI LAIN (TIDAK BERUBAH) ---
+    def enter_pressed(self, event):
+        keyword=self.search_entry.get()
+        self.search_patient(keyword)
+
+    def search_patient(self, keyword):
+        keyword=keyword.strip()
+
+        if keyword == "":
+            self.render_table(self.patients_data)
+            return
+        
+        result = []
+        keyword_lower = keyword.lower() 
+        for p in self.patients_data:
+            nama = p[0].lower()
+            if keyword_lower in nama:
+                result.append(p)
+
+        if not result:
+            messagebox.showinfo("Hasil", "Pasien tidak ditemukan")
+        
+        self.render_table(result)
+
+    def badge_colour(self, kategori):
+        # Menggunakan warna yang konsisten dengan perbaikan sebelumnya (light mode)
+        if kategori == "Memadai": return "#bbf7d0" # Green
+        if kategori == "Berisiko": return "#fecaca" # Red
+        return "#e5e7eb"
+    
+    def view_detail(self, data):
+        messagebox.showinfo(
+            "Detail Pasien",
+            f"Nama: {data[0]}\nDiagnosa: {data[1]}\nJenis: {data[2]}\nKategori: {data[3]}"
+        )
+    
+    def run(self):
+        self.window.mainloop()
+
+    
+if __name__ == "__main__":
+    contoh_user = {"Nama": "dr. Diftya"}
+    app = dokter2Dashboard(contoh_user)
+    app.run()
