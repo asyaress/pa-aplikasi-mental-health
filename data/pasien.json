@@ -1,24 +1,56 @@
 [
-  {
-    "id": 1,
-    "id_user": 4,
-    "id_dokter": 1,
-    "nama": "Ahmad Rizki",
-    "jenis_kelamin": "Laki-laki",
-    "pendidikan": "SMA",
-    "pekerjaan": "Mahasiswa",
-    "diagnosa": "Gangguan Kecemasan Umum",
-    "id_set_pertanyaan": 1
-  },
-  {
-    "id": 2,
-    "id_user": 5,
-    "id_dokter": 1,
-    "nama": "Siti Nurhaliza",
-    "jenis_kelamin": "Perempuan",
-    "pendidikan": "S1",
-    "pekerjaan": "Karyawan Swasta",
-    "diagnosa": "Depresi Ringan",
-    "id_set_pertanyaan": 1
-  }
+    {
+        "id": 1,
+        "id_user": 4,
+        "id_dokter": 1,
+        "nama": "Ahmad",
+        "jenis_kelamin": "Laki-laki",
+        "pendidikan": "SMA/Sederajat",
+        "pekerjaan": "Tidak Bekerja",
+        "diagnosa": "Gangguan Kecemasan Umum",
+        "id_set_pertanyaan": 1,
+        "tanggal_lahir": "2007-10-12",
+        "alamat": "",
+        "no_hp": "",
+        "tanggal_konsul": "2025-12-27"
+    },
+    {
+        "id": 2,
+        "id_user": 5,
+        "id_dokter": 1,
+        "nama": "Siti Nurhaliza",
+        "jenis_kelamin": "Perempuan",
+        "pendidikan": "S1",
+        "pekerjaan": "Karyawan Swasta",
+        "diagnosa": "Depresi Ringan",
+        "id_set_pertanyaan": 1
+    },
+    {
+        "id": 3,
+        "id_user": 6,
+        "id_dokter": 1,
+        "nama": "Athasyahri Syawal Fahrezy",
+        "jenis_kelamin": "Laki-laki",
+        "tanggal_lahir": "2007-10-12",
+        "pendidikan": "Sarjana",
+        "pekerjaan": "Tidak Bekerja",
+        "alamat": "Jl Sentosa",
+        "no_hp": "085348236123",
+        "diagnosa": "Stress Akut",
+        "id_set_pertanyaan": 1
+    },
+    {
+        "id": 4,
+        "id_user": 7,
+        "id_dokter": 1,
+        "nama": "Athasyahri",
+        "jenis_kelamin": "Laki-laki",
+        "tanggal_lahir": "2007-10-12",
+        "pendidikan": "Perguruan Tinggi",
+        "pekerjaan": "Pegawai Swasta",
+        "alamat": "Jl",
+        "no_hp": "0861281312",
+        "diagnosa": "Gatau",
+        "id_set_pertanyaan": 1
+    }
 ]

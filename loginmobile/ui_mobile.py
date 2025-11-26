@@ -1,31 +1,14 @@
 import customtkinter as ctk
-from tkinter import messagebox
-from auth import AuthBackend
 
 
-class MobileLoginAppFlexible:
-    def __init__(self):
-        ctk.set_appearance_mode("light")
-        ctk.set_default_color_theme("blue")
-
-        width, height = 393, 852
-
-        self.window = ctk.CTk()
-        self.window.title("Login - Mental Health App")
-        self.window.geometry(f"{width}x{height}")
-        self.window.resizable(False, False)
-        self.window.configure(fg_color="white")
-
-        self.width = width
-        self.height = height
-
-        self.auth = AuthBackend()
-        self.create_ui()
+class LoginUIMixin:
+    """Mixin: bikin tampilan layar login mobile."""
 
     def create_ui(self):
         main_container = ctk.CTkFrame(self.window, fg_color="white")
         main_container.pack(fill="both", expand=True)
 
+        # ------- BAGIAN ATAS (BACKGROUND BULAT) -------
         canvas_height = int(self.height * 0.35)
         canvas = ctk.CTkCanvas(
             main_container,
@@ -56,6 +39,7 @@ class MobileLoginAppFlexible:
             outline="",
         )
 
+        # ------- KONTEN UTAMA -------
         content = ctk.CTkFrame(main_container, fg_color="white")
         content.pack(fill="both", expand=True, padx=30, pady=10)
 
@@ -77,6 +61,7 @@ class MobileLoginAppFlexible:
         )
         subtitle_label.pack(anchor="w", pady=(0, 25))
 
+        # ------- USERNAME -------
         email_label = ctk.CTkLabel(
             content,
             text="Username",
@@ -106,6 +91,7 @@ class MobileLoginAppFlexible:
         )
         self.email_entry.pack(side="left", fill="both", expand=True, padx=(0, 12))
 
+        # ------- PASSWORD -------
         password_label = ctk.CTkLabel(
             content,
             text="Password",
@@ -136,6 +122,7 @@ class MobileLoginAppFlexible:
         )
         self.password_entry.pack(side="left", fill="both", expand=True, padx=(0, 12))
 
+        # ------- TOMBOL LOGIN -------
         login_button = ctk.CTkButton(
             content,
             text="Log in",
@@ -144,7 +131,7 @@ class MobileLoginAppFlexible:
             fg_color="#3b5998",
             hover_color="#2d4373",
             corner_radius=8,
-            command=self.login,
+            command=self.login,  # method dari LoginLogicMixin
         )
         login_button.pack(fill="x", pady=(0, 15))
 
@@ -155,111 +142,3 @@ class MobileLoginAppFlexible:
             text_color="#999999",
         )
         info_label.pack(pady=(10, 0))
-
-    def login(self):
-        username = self.email_entry.get().strip()
-        password = self.password_entry.get()
-
-        if not username or not password:
-            messagebox.showerror("Error", "Mohon isi username dan password!")
-            return
-
-        print("=" * 50)
-        print("Mencoba login...")
-        print(f"Username: {username}")
-        print(f"Password: {'*' * len(password)}")
-
-        user = self.auth.login(username, password)
-
-        if user:
-            print("\nLOGIN BERHASIL!")
-            print(f"ID User: {user['id']}")
-            print(f"Nama: {user.get('nama', 'N/A')}")
-            print(f"Username: {user['username']}")
-            print(f"Role: {user['role_name']} (ID: {user['id_role']})")
-
-            # Tampilkan data tambahan sesuai role
-            if user["id_role"] == 2:  # Dokter
-                print(f"Spesialis: {user.get('spesialis', 'N/A')}")
-            elif user["id_role"] == 3:  # Pasien
-                print(f"ID Pasien: {user.get('id_pasien', 'N/A')}")
-                print(f"Diagnosa: {user.get('diagnosa', 'N/A')}")
-
-            print("=" * 50)
-
-            messagebox.showinfo(
-                "Login Berhasil",
-                f"Selamat datang, {user.get('nama', user['username'])}!\n\n"
-                f"Role: {user['role_name']}",
-            )
-
-            self.redirect_dashboard(user)
-
-        else:
-            print("\nLOGIN GAGAL!")
-            print("Username atau Password salah!")
-            print("=" * 50)
-
-            messagebox.showerror(
-                "Login Gagal",
-                "Username atau Password salah!\n\n"
-                "Silakan coba lagi atau hubungi admin.",
-            )
-
-    def redirect_dashboard(self, user):
-        role_id = user["id_role"]
-        role_name = user["role_name"]
-
-        print(f"\n→ Redirect ke Dashboard {role_name}...")
-
-        if role_id == 1:
-            print("  Membuka Dashboard Admin...")
-            # TODO: self.open_admin_dashboard(user)
-
-        elif role_id == 2:
-            print("  Membuka Dashboard Dokter...")
-            # TODO: self.open_dokter_dashboard(user)
-
-        elif role_id == 3:
-            print("  Membuka Dashboard Pasien...")
-            self.open_pasien_dashboard(user)
-
-        else:
-            print("  Role tidak dikenali!")
-            messagebox.showerror("Error", "Role user tidak valid!")
-
-    def open_pasien_dashboard(self, user):
-        try:
-            from pasien_dashboard import PasienDashboard
-
-            print("\nMembuka Pasien Dashboard...")
-            print(f"   User: {user.get('nama')}")
-            print(f"   ID Pasien: {user.get('id_pasien')}")
-
-            self.window.withdraw()
-
-            dashboard = PasienDashboard(user)
-            dashboard.run()
-
-            print("\n👋 Dashboard ditutup. Menutup aplikasi...")
-            self.window.destroy()
-
-        except ImportError as e:
-            print(f"\nError: File pasien_dashboard.py tidak ditemukan!")
-            print(f"   Detail: {e}")
-            messagebox.showerror(
-                "Error",
-                "File dashboard pasien tidak ditemukan!\n\n"
-                "Pastikan file pasien_dashboard.py ada di folder yang sama.",
-            )
-            self.window.deiconify()
-        except Exception as e:
-            self.window.deiconify()
-
-    def run(self):
-        self.window.mainloop()
-
-
-if __name__ == "__main__":
-    app = MobileLoginAppFlexible()
-    app.run()

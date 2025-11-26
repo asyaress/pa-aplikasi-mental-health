@@ -10,16 +10,16 @@ class DesktopLoginApp:
 
         self.window = ctk.CTk()
         self.window.title("Mental Health Monitoring System - Login")
-        
+
         screen_width = self.window.winfo_screenwidth()
         screen_height = self.window.winfo_screenheight()
-        
+
         window_width = 1200
         window_height = 700
-        
+
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2
-        
+
         self.window.geometry(f"{window_width}x{window_height}+{x}+{y}")
         self.window.resizable(False, False)
         self.window.configure(fg_color="white")
@@ -36,7 +36,7 @@ class DesktopLoginApp:
             text="Mental Health\nMonitoring System",
             font=("Arial Bold", 48),
             text_color="white",
-            justify="center"
+            justify="center",
         )
         title_label.place(relx=0.5, rely=0.4, anchor="center")
 
@@ -45,7 +45,7 @@ class DesktopLoginApp:
             text="WHO-5 Well-Being Index\nDaily Check-In System",
             font=("Arial", 18),
             text_color="#e0e0e0",
-            justify="center"
+            justify="center",
         )
         subtitle_label.place(relx=0.5, rely=0.55, anchor="center")
 
@@ -59,7 +59,7 @@ class DesktopLoginApp:
             login_container,
             text="Welcome Back",
             font=("Arial Bold", 36),
-            text_color="#000000"
+            text_color="#000000",
         )
         welcome_label.pack(pady=(0, 10))
 
@@ -67,7 +67,7 @@ class DesktopLoginApp:
             login_container,
             text="Please login to continue",
             font=("Arial", 16),
-            text_color="#666666"
+            text_color="#666666",
         )
         subtitle_login.pack(pady=(0, 40))
 
@@ -76,7 +76,7 @@ class DesktopLoginApp:
             text="Username",
             font=("Arial Medium", 14),
             text_color="#333333",
-            anchor="w"
+            anchor="w",
         )
         username_label.pack(anchor="w", pady=(0, 8))
 
@@ -88,7 +88,7 @@ class DesktopLoginApp:
             font=("Arial", 14),
             fg_color="#f5f5f5",
             border_width=0,
-            corner_radius=8
+            corner_radius=8,
         )
         self.username_entry.pack(pady=(0, 20))
 
@@ -97,7 +97,7 @@ class DesktopLoginApp:
             text="Password",
             font=("Arial Medium", 14),
             text_color="#333333",
-            anchor="w"
+            anchor="w",
         )
         password_label.pack(anchor="w", pady=(0, 8))
 
@@ -110,7 +110,7 @@ class DesktopLoginApp:
             show="*",
             fg_color="#f5f5f5",
             border_width=0,
-            corner_radius=8
+            corner_radius=8,
         )
         self.password_entry.pack(pady=(0, 30))
 
@@ -123,7 +123,7 @@ class DesktopLoginApp:
             fg_color="#3b5998",
             hover_color="#2d4373",
             corner_radius=8,
-            command=self.login
+            command=self.login,
         )
         login_button.pack(pady=(0, 20))
 
@@ -131,7 +131,7 @@ class DesktopLoginApp:
             login_container,
             text="Demo: pasien1 / pasien123",
             font=("Arial", 12),
-            text_color="#999999"
+            text_color="#999999",
         )
         info_label.pack(pady=(10, 0))
 
@@ -151,13 +151,12 @@ class DesktopLoginApp:
         if user:
             messagebox.showinfo(
                 "Login Successful",
-                f"Welcome, {user.get('nama', user['username'])}\n\nRole: {user['role_name']}"
+                f"Welcome, {user.get('nama', user['username'])}\n\nRole: {user['role_name']}",
             )
             self.redirect_dashboard(user)
         else:
             messagebox.showerror(
-                "Login Failed",
-                "Invalid username or password\n\nPlease try again"
+                "Login Failed", "Invalid username or password\n\nPlease try again"
             )
 
     def redirect_dashboard(self, user):
@@ -166,7 +165,7 @@ class DesktopLoginApp:
         if role_id == 1:
             pass
         elif role_id == 2:
-            pass
+            self.open_dokter_dashboard(user)
         elif role_id == 3:
             self.open_pasien_dashboard(user)
         else:
@@ -183,12 +182,44 @@ class DesktopLoginApp:
 
         except ImportError as e:
             messagebox.showerror(
-                "Error",
-                "Dashboard file not found\n\nPlease check pasien_dashboard.py"
+                "Error", "Dashboard file not found\n\nPlease check pasien_dashboard.py"
             )
             self.window.deiconify()
         except Exception as e:
             messagebox.showerror("Error", f"Failed to open dashboard\n\n{str(e)}")
+            self.window.deiconify()
+
+    def open_dokter_dashboard(self, user):
+        try:
+            from dokter.dashboard import dokterDashboard
+
+            print("\nMembuka Dokter Dashboard...")
+            print(f"   Dokter: {user.get('nama')}")
+            print(f"   ID Dokter: {user.get('id_dokter')}")
+
+            self.window.withdraw()
+
+            def back_to_login():
+                print("\nKembali ke halaman login dari dashboard dokter...")
+                self.window.deiconify()  # munculkan lagi window login
+
+            # Kirim callback ke dashboard
+            dashboard = dokterDashboard(user, on_logout=back_to_login)
+            dashboard.run()
+
+            print("\n👋 Dashboard dokter ditutup.")
+
+        except ImportError as e:
+            print(f"\nError: File dashboard_dokter.py tidak ditemukan!")
+            print(f"   Detail: {e}")
+            messagebox.showerror(
+                "Error",
+                "File dashboard dokter tidak ditemukan!\n\n"
+                "Pastikan file dashboard_dokter.py ada di folder yang sama.",
+            )
+            self.window.deiconify()
+        except Exception as e:
+            print(f"\nError saat membuka dashboard dokter: {e}")
             self.window.deiconify()
 
     def run(self):
