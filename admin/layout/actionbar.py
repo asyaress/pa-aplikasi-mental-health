@@ -3,62 +3,25 @@ import customtkinter as ctk
 
 class ActionBar:
     def __init__(self, parent, on_search, on_add):
+        # 1. Frame utama (Wadah Bar)
         self.frame = ctk.CTkFrame(
-            parent, fg_color="white", height=60, corner_radius=0
+            parent, fg_color="#f8f8f8", height=60, corner_radius=10
         )
-        self.frame.pack(fill="x", padx=30, pady=20)
+        # Mengisi lebar penuh dengan padding di samping
+        self.frame.pack(fill="x", padx=30, pady=15) 
 
-        left = ctk.CTkFrame(self.frame, fg_color="transparent")
-        left.pack(side="left", padx=15, pady=10)
-
-        ctk.CTkButton(
-            left,
-            text="⚙",
-            width=35,
-            height=35,
-            fg_color="transparent",
-            text_color="#666",
-            hover_color="#f0f0f0",
-            font=("Arial", 18),
-        ).pack(side="left", padx=(0, 10))
-
-        self.search_entry = ctk.CTkEntry(
-            left,
-            placeholder_text="🔍 Search",
-            width=250,
-            height=35,
-            border_width=1,
-            border_color="#ddd",
-            fg_color="white",
-        )
-        self.search_entry.pack(side="left", padx=(0, 15))
-        self.search_entry.bind(
-            "<Return>", lambda event: on_search(self.search_entry.get())
-        )
-
-        self.selected_label = ctk.CTkLabel(
-            left,
-            text="0 Selected",
-            text_color="#2563eb",
-            font=("Arial Bold", 12),
-        )
-        self.selected_label.pack(side="left")
-
+        # Catatan: Frame 'left' tidak dibuat karena sudah tidak dibutuhkan.
+        
+        # 2. Bagian Kanan (Wadah Tombol)
         right = ctk.CTkFrame(self.frame, fg_color="transparent")
-        right.pack(side="right", padx=15)
+        # side="right" memastikan tombol menempel di ujung kanan self.frame
+        right.pack(side="right", padx=15, pady=0) 
 
-        self.pagination_label = ctk.CTkLabel(
-            right,
-            text="1 - 0 of 0",
-            text_color="#666",
-            font=("Arial", 12),
-        )
-        self.pagination_label.pack(side="left", padx=10)
-
+        # 3. Tombol Tambah
         self.add_button = ctk.CTkButton(
             right,
-            text="+",
-            width=110,
+            text="+ TAMBAH BARU", # Mengubah teks agar lebih informatif
+            width=140,
             height=35,
             fg_color="#22c55e",
             hover_color="#16a34a",
@@ -67,13 +30,8 @@ class ActionBar:
             corner_radius=8,
             command=on_add,
         )
-        self.add_button.pack(side="left", padx=10)
+        self.add_button.pack(side="left", padx=0) # Pack di dalam frame 'right'
 
     def update_add_button(self, text, command):
+        """Method untuk mengubah teks dan fungsi tombol Tambah saat dibutuhkan."""
         self.add_button.configure(text=text, command=command)
-
-    def update_pagination(self, total):
-        self.pagination_label.configure(text=f"1 - {total} of {total}")
-
-    def update_selected(self, count):
-        self.selected_label.configure(text=f"{count} Selected")

@@ -14,7 +14,7 @@ class MobileLoginAppFlexible(LoginLogicMixin, LoginUIMixin):
     - logika login & redirect (dari LoginLogicMixin)
     """
 
-    def __init__(self):
+    def __init__(self): #self emang dari sananya pep 8 gtu aturan style piton
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
 
@@ -23,9 +23,8 @@ class MobileLoginAppFlexible(LoginLogicMixin, LoginUIMixin):
         self.window = ctk.CTk()
         self.window.title("Login - Mental Health App")
         self.window.geometry(f"{width}x{height}")
-        self.window.resizable(False, False)
+        self.window.resizable(True, True)
         self.window.configure(fg_color="white")
-
         self.width = width
         self.height = height
 

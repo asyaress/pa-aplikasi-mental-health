@@ -5,15 +5,15 @@ class BaseLayoutMixin:
     """Layout dasar: header, area card, bagian bawah."""
 
     def build_base_layout(self):
+        # container utama yang nge-hold semua layout
         main_container = ctk.CTkFrame(self.window, fg_color="#f8f9fa")
         main_container.pack(fill="both", expand=True)
 
-        # ----- HEADER -----
         header_frame = ctk.CTkFrame(
             main_container, fg_color="white", corner_radius=0, height=190
         )
         header_frame.pack(fill="x", padx=0, pady=0)
-        header_frame.pack_propagate(False)
+        header_frame.pack_propagate(False)  # lock tinggi header
 
         header_content = ctk.CTkFrame(header_frame, fg_color="transparent")
         header_content.pack(fill="both", padx=18, pady=14)
@@ -21,6 +21,7 @@ class BaseLayoutMixin:
         top_row = ctk.CTkFrame(header_content, fg_color="transparent")
         top_row.pack(fill="x")
 
+        # ambil nama depan 
         nama_depan = self.nama_pasien.split()[0] if self.nama_pasien else "Pasien"
 
         self.greeting_label = ctk.CTkLabel(
@@ -31,19 +32,6 @@ class BaseLayoutMixin:
             anchor="w",
         )
         self.greeting_label.pack(side="left")
-
-        profile_button = ctk.CTkButton(
-            top_row,
-            text="Profile",
-            width=70,
-            height=28,
-            fg_color="transparent",
-            hover_color="#e0e0e0",
-            text_color="#333333",
-            font=("Arial", 11),
-            corner_radius=14,
-        )
-        profile_button.pack(side="right")
 
         self.title_label = ctk.CTkLabel(
             header_content,
@@ -65,17 +53,17 @@ class BaseLayoutMixin:
         )
         self.subtitle_label.pack(anchor="w")
 
-        # ----- AREA TENGAH (CARD) -----
+        # area fleksibel buat nampilin card pertanyaan / konten utama
         self.card_container = ctk.CTkFrame(main_container, fg_color="transparent")
         self.card_container.pack(fill="both", expand=True, padx=16, pady=(8, 8))
 
-        # ----- BAGIAN BAWAH -----
         bottom_container = ctk.CTkFrame(
             main_container, fg_color="transparent", height=150
         )
         bottom_container.pack(fill="x", padx=18, pady=(0, 18))
         bottom_container.pack_propagate(False)
 
+        # label progress check-in 2 minggu
         self.progress_label = ctk.CTkLabel(
             bottom_container,
             text="Progress 2 minggu: 0/14",
@@ -85,6 +73,7 @@ class BaseLayoutMixin:
         )
         self.progress_label.pack(anchor="w", pady=(0, 4))
 
+        # progress bar visual buat 14 hari check-in
         self.week_progress_bar = ctk.CTkProgressBar(
             bottom_container,
             height=8,
@@ -103,6 +92,7 @@ class BaseLayoutMixin:
         )
         self.consult_label.pack(anchor="w", pady=(2, 10))
 
+        # navigasi pertanyaan (prev / next)
         self.nav_frame = ctk.CTkFrame(bottom_container, fg_color="transparent")
         self.nav_frame.pack(pady=(4, 0))
 
@@ -116,7 +106,7 @@ class BaseLayoutMixin:
             hover_color="#2d4373",
             corner_radius=10,
             command=self.previous_question,
-            state="disabled",
+            state="disabled",  # awalnya disabled karena di pertanyaan pertama
         )
         self.prev_button.pack(side="left", padx=6)
 
@@ -134,6 +124,7 @@ class BaseLayoutMixin:
         self.next_button.pack(side="left", padx=6)
 
     def update_week_progress_ui(self):
+        # batasi progress maksimal 14 hari
         selesai = min(self.total_checkin, 14)
         self.progress_label.configure(text=f"Progress 2 minggu: {selesai}/14")
 
@@ -142,6 +133,7 @@ class BaseLayoutMixin:
         else:
             self.week_progress_bar.set(selesai / 14)
 
+        # update teks jadwal konsul berdasarkan status progress
         if selesai >= 14:
             if self.tanggal_konsul:
                 teks = f"Jadwal Konsul: {self.tanggal_konsul}"

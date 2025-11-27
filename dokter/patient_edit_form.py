@@ -5,20 +5,22 @@ from tkinter import messagebox
 class EditPatientMixin:
     """Form edit pasien."""
 
-    # ---------- EDIT PASIEN ----------
     def open_edit_patient_window(self, row_data):
+        # ambil detail pasien dari row yang diklik di tabel
         pasien = row_data.get("detail", {})
         self.editing_pasien_id = row_data.get("id_pasien")
 
+        # window popup untuk edit data pasien
         win = ctk.CTkToplevel(self.window)
         win.title(f"Edit Pasien - {pasien.get('nama', '-')}")
         win.geometry("600x750")
-        win.grab_set()
+        win.grab_set()  # fokus ke window ini dulu (modal)
         self.edit_patient_window = win
 
         outer_frame = ctk.CTkFrame(win, fg_color="#f8f9fa")
         outer_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
+        # scrollable frame biar kalau form panjang tetap enak di-scroll
         scroll_frame = ctk.CTkScrollableFrame(
             outer_frame,
             fg_color="#ffffff",
@@ -35,6 +37,7 @@ class EditPatientMixin:
             text_color="#111827",
         ).pack(pady=(10, 20))
 
+        # helper kecil buat bikin label + entry sekaligus
         def add_labeled_entry(parent, label_text, initial_value="", show=None):
             lbl = ctk.CTkLabel(
                 parent,
@@ -81,7 +84,7 @@ class EditPatientMixin:
         self.edit_gender_option.set(gender_val)
         self.edit_gender_option.pack(fill="x", padx=10, pady=(0, 5))
 
-        # Tanggal lahir
+        # Tanggal lahir (dipisah hari/bulan/tahun biar input lebih terkontrol)
         ctk.CTkLabel(
             frame,
             text="Tanggal Lahir",
@@ -213,6 +216,7 @@ class EditPatientMixin:
             pasien.get("diagnosa", ""),
         )
 
+        # tombol aksi
         ctk.CTkButton(
             frame,
             text="Simpan Perubahan",
@@ -233,11 +237,13 @@ class EditPatientMixin:
         ).pack(fill="x", padx=10, pady=(0, 10))
 
     def submit_edit_patient(self):
+        # pastikan id pasien yang sedang diedit ada
         id_pasien = getattr(self, "editing_pasien_id", None)
         if not id_pasien:
             messagebox.showerror("Error", "Data pasien yang diedit tidak ditemukan.")
             return
 
+        # ambil semua nilai dari form
         nama = (self.edit_name_entry.get() or "").strip()
         jenis_kelamin = self.edit_gender_option.get()
 
@@ -251,10 +257,12 @@ class EditPatientMixin:
         no_hp = (self.edit_phone_entry.get() or "").strip()
         diagnosa = (self.edit_diagnosa_entry.get() or "").strip()
 
+        # validasi simpel: nama wajib diisi
         if not nama:
             messagebox.showerror("Error", "Nama pasien wajib diisi.")
             return
 
+        # validasi nomor HP: hanya boleh angka, +, dan -
         if no_hp and not no_hp.replace("+", "").replace("-", "").isdigit():
             messagebox.showerror(
                 "Error",
@@ -262,8 +270,10 @@ class EditPatientMixin:
             )
             return
 
+        # rakit tanggal lahir kalau salah satu field diisi
         tanggal_lahir = ""
         if day or month or year:
+            # wajib isi semua kalau mau diisi
             if not (day and month and year):
                 messagebox.showerror(
                     "Error",
@@ -281,9 +291,11 @@ class EditPatientMixin:
             month = month.zfill(2)
             tanggal_lahir = f"{year}-{month}-{day}"
 
+        # load data pasien dari "database" JSON
         pasien_list = self.load_json("pasien.json")
         updated = False
 
+        # update data pasien yang id-nya cocok
         for p in pasien_list:
             if p.get("id") == id_pasien:
                 p["nama"] = nama
@@ -304,6 +316,7 @@ class EditPatientMixin:
             )
             return
 
+        # simpan balik ke file JSON
         self.save_json("pasien.json", pasien_list)
 
         messagebox.showinfo(
@@ -311,8 +324,10 @@ class EditPatientMixin:
             "Data pasien berhasil diperbarui.",
         )
 
+        # tutup window edit kalau masih kebuka
         if hasattr(self, "edit_patient_window"):
             self.edit_patient_window.destroy()
 
+        # refresh data tabel pasien biar langsung kelihatan perubahan
         self.patients_data = self.load_patients_for_current_doctor()
         self.render_table(self.patients_data)

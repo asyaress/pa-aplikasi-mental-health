@@ -29,7 +29,6 @@ class dokterDashboard(
         # data pasien
         self.patients_data = self.load_patients_for_current_doctor()
 
-        # bangun UI (sidebar + tabel)
         self.build_ui()
 
     def run(self):

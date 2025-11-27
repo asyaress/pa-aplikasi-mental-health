@@ -26,7 +26,9 @@ class DesktopLoginLogicMixin:
                 f"Welcome, {user.get('nama', user['username'])}\n\n"
                 f"Role: {user['role_name']}",
             )
-            self.redirect_dashboard(user)
+            self.redirect_dashboard(
+                user
+            )  # arahkan otomatis  ke page dashboard pertanyaan
         else:
             messagebox.showerror(
                 "Login Failed",
@@ -35,7 +37,7 @@ class DesktopLoginLogicMixin:
 
     # ---------- Redirect ke dashboard sesuai role ----------
 
-    def redirect_dashboard(self, user):
+    def redirect_dashboard(self, user):  # otomatis ngarahin ke page dashboard lain
         role_id = user["id_role"]
 
         if role_id == 1:
@@ -50,11 +52,10 @@ class DesktopLoginLogicMixin:
         else:
             messagebox.showerror("Error", "Invalid user role")
 
-    # ---------- Dashboard Admin ----------
+    #  Dashboard Admin di sini
 
     def open_admin_dashboard(self, user):
         try:
-            # sesuai dengan class yang kamu punya: AdminApp di admin/app.py
             from admin.app import AdminApp
 
             print("\nMembuka Admin Dashboard...")
@@ -63,27 +64,22 @@ class DesktopLoginLogicMixin:
             # sembunyikan window login
             self.window.withdraw()
 
-            # jalankan dashboard admin
-            app = AdminApp(user)
-            app.run()  # akan block sampai window admin ditutup
+            def back_to_login():
+                # callback ini dikirim ke AdminApp
+                print("\nKembali ke halaman login dari dashboard admin...")
+                self.window.deiconify()
 
-            print("\n👋 Dashboard admin ditutup, kembali ke login.")
-            # setelah admin window ditutup, tampilkan lagi window login
-            self.window.deiconify()
+            # kirim callback ke AdminApp
+            app = AdminApp(user, on_logout=back_to_login)
+            app.run()  # block sampai window admin selesai (destroy)
+
+            print("\n Dashboard admin ditutup.")
 
         except ImportError as e:
-            print("\nError saat import dashboard admin:")
-            print(f"   Detail: {e}")
-            messagebox.showerror(
-                "Error",
-                "File / modul 'admin.app' tidak ditemukan!\n\n"
-                "Pastikan folder 'admin' dan file 'app.py' sudah ada,\n"
-                "dan di dalamnya terdapat class 'AdminApp'.",
-            )
+            ...
             self.window.deiconify()
         except Exception as e:
-            print(f"\nError saat membuka dashboard admin: {e}")
-            messagebox.showerror("Error", f"Gagal membuka dashboard admin\n\n{str(e)}")
+            ...
             self.window.deiconify()
 
     # ---------- Dashboard Pasien ----------

@@ -13,7 +13,10 @@ def open_edit_question(app, item):
     frame.pack(fill="both", expand=True, padx=20, pady=20)
 
     ctk.CTkLabel(
-        frame, text="Edit Item Pertanyaan", font=("Arial Bold", 20), text_color="#111827"
+        frame,
+        text="Edit Item Pertanyaan",
+        font=("Arial Bold", 20),
+        text_color="#111827",
     ).pack(pady=(5, 15))
 
     sets = datastore.load_question_sets()
@@ -30,8 +33,7 @@ def open_edit_question(app, item):
     else:
         set_values = [f"{s.get('id')} - {s.get('nama_set', '')}" for s in sets_list]
         display_to_id = {
-            f"{s.get('id')} - {s.get('nama_set', '')}": s.get("id")
-            for s in sets_list
+            f"{s.get('id')} - {s.get('nama_set', '')}": s.get("id") for s in sets_list
         }
 
     ctk.CTkLabel(
@@ -73,9 +75,7 @@ def open_edit_question(app, item):
             return
 
         if not nomor_str or not teks:
-            messagebox.showerror(
-                "Error", "Nomor urut dan teks pertanyaan wajib diisi."
-            )
+            messagebox.showerror("Error", "Nomor urut dan teks pertanyaan wajib diisi.")
             return
 
         try:

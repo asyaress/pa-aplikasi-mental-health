@@ -6,16 +6,17 @@ import datetime
 class KonsulPatientMixin:
     """Form atur tanggal konsultasi pasien."""
 
-    # ---------- TANGGAL KONSUL ----------
     def open_set_konsul_window(self, row_data):
+        # ambil data dasar pasien dari row tabel
         pasien = row_data.get("detail", {})
         id_pasien = row_data.get("id_pasien")
         existing_date = pasien.get("tanggal_konsul") or ""
 
+        # popup window khusus untuk atur tanggal konsul
         win = ctk.CTkToplevel(self.window)
         win.title(f"Atur Tanggal Konsul - {pasien.get('nama', '-')}")
         win.geometry("400x250")
-        win.grab_set()
+        win.grab_set()  # bikin window ini jadi fokus utama
         self.konsul_window = win
         self.konsul_for_id = id_pasien
 
@@ -32,6 +33,7 @@ class KonsulPatientMixin:
         date_frame = ctk.CTkFrame(frame, fg_color="transparent")
         date_frame.pack(pady=(0, 10))
 
+        # default tanggal pakai hari ini atau tanggal yang sudah pernah diset
         today = datetime.date.today()
         def_day = today.day
         def_month = today.month
@@ -44,8 +46,9 @@ class KonsulPatientMixin:
                 def_month = int(m)
                 def_day = int(d)
             except ValueError:
-                pass
+                pass  # kalau format aneh, balik ke default tadi
 
+        # isi dropdown hari, bulan, tahun
         day_values = [f"{i:02d}" for i in range(1, 32)]
         month_values = [f"{i:02d}" for i in range(1, 13)]
         year_values = [str(def_year + i) for i in range(0, 3)]
@@ -74,6 +77,7 @@ class KonsulPatientMixin:
         self.konsul_year_option.set(str(def_year))
         self.konsul_year_option.pack(side="left", padx=5)
 
+        # tombol simpan / batal
         ctk.CTkButton(
             frame,
             text="Simpan Tanggal Konsul",
@@ -94,6 +98,7 @@ class KonsulPatientMixin:
         ).pack(fill="x", padx=10, pady=(0, 10))
 
     def submit_konsul_date(self):
+        # safety: pastikan id pasien konsul masih ada
         if not hasattr(self, "konsul_for_id"):
             messagebox.showerror("Error", "Data pasien tidak ditemukan.")
             return
@@ -102,10 +107,12 @@ class KonsulPatientMixin:
         month = self.konsul_month_option.get()
         year = self.konsul_year_option.get()
 
+        # cek input beneran angka semua
         if not (day.isdigit() and month.isdigit() and year.isdigit()):
             messagebox.showerror("Error", "Tanggal konsultasi tidak valid.")
             return
 
+        # validasi tanggal beneran ada (bukan 31/02, dll.)
         try:
             datetime.date(int(year), int(month), int(day))
         except ValueError:
@@ -114,6 +121,7 @@ class KonsulPatientMixin:
 
         tanggal_konsul = f"{year}-{month}-{day}"
 
+        # update ke data pasien di JSON
         pasien_list = self.load_json("pasien.json")
         updated = False
 
@@ -134,6 +142,7 @@ class KonsulPatientMixin:
             f"Tanggal konsultasi disimpan: {tanggal_konsul}",
         )
 
+        # tutup window dan refresh tabel pasien
         if hasattr(self, "konsul_window"):
             self.konsul_window.destroy()
 

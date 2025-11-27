@@ -1,7 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-
 class CreatePatientMixin:
     """Form tambah pasien (create)."""
 
@@ -46,8 +45,8 @@ class CreatePatientMixin:
                 parent,
                 height=32,
                 show=show,
-            )
-            ent.pack(fill="x", padx=10, pady=(0, 5))
+            ) 
+            ent.pack(fill="x", padx=10, pady=(0, 5)) #
 
             return ent
 

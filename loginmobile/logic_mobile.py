@@ -1,7 +1,7 @@
 from tkinter import messagebox
 
 
-class LoginLogicMixin:
+class LoginLogicMixin: 
     """
     Mixin: logika login & redirect ke dashboard sesuai role.
     Butuh:
@@ -10,10 +10,11 @@ class LoginLogicMixin:
       - self.email_entry, self.password_entry (dari UI mixin)
     """
 
-    def login(self):
-        username = self.email_entry.get().strip()
+    def login(self): # fungsi login ni kids 
+        username = self.email_entry.get().strip() # get buat ngambil value keynya, terus strip bikin inputan jadi lowercase semua 
         password = self.password_entry.get()
 
+        #error handling inputan login gak boleh kosong
         if not username or not password:
             messagebox.showerror("Error", "Mohon isi username dan password!")
             return
@@ -23,27 +24,27 @@ class LoginLogicMixin:
         print(f"Username: {username}")
         print(f"Password: {'*' * len(password)}")
 
-        user = self.auth.login(username, password)
+        user = self.auth.login(username, password) #bikin variabel biar bisa lebih singkat
 
-        if user:
+        if user: #buat terminal doang
             print("\nLOGIN BERHASIL!")
             print(f"ID User: {user['id']}")
             print(f"Nama: {user.get('nama', 'N/A')}")
             print(f"Username: {user['username']}")
-            print(f"Role: {user['role_name']} (ID: {user['id_role']})")
+            print(f"Role: {user['role_name']} (ID: {user['id_role']})") #sampe sini terminalnya
 
-            if user["id_role"] == 2:
+            if user["id_role"] == 2: # logic login sebagai apa
                 print(f"Spesialis: {user.get('spesialis', 'N/A')}")
             elif user["id_role"] == 3:
                 print(f"ID Pasien: {user.get('id_pasien', 'N/A')}")
                 print(f"Diagnosa: {user.get('diagnosa', 'N/A')}")
 
-            print("=" * 50)
+            print("=" * 50) #terminal
 
             messagebox.showinfo(
                 "Login Berhasil",
                 f"Selamat datang, {user.get('nama', user['username'])}!\n\n"
-                f"Role: {user['role_name']}",
+                f"Role: {user['role_name']}", # minta program jelaskan user ini rolenya apa
             )
 
             self.redirect_dashboard(user)

@@ -3,12 +3,13 @@ from tkinter import messagebox
 
 
 class QuestionFlowMixin:
-    """Semua yang terkait tampilan & flow pertanyaan."""
 
     def show_question_card(self):
+        # bersihin isi card biar tampilan selalu fresh tiap ganti pertanyaan
         for widget in self.card_container.winfo_children():
             widget.destroy()
 
+        # kalau di item_pertanyaan datanya kosong
         if not self.questions or self.current_question >= len(self.questions):
             error_label = ctk.CTkLabel(
                 self.card_container,
@@ -19,6 +20,7 @@ class QuestionFlowMixin:
             error_label.pack(expand=True)
             return
 
+        # simpan data pertanyaan aktif ke current_q
         current_q = self.questions[self.current_question]
 
         card = ctk.CTkFrame(self.card_container, fg_color="white", corner_radius=15)
@@ -32,11 +34,12 @@ class QuestionFlowMixin:
         )
         num_label.pack(padx=22, pady=(22, 6))
 
+        # ambil teks pertanyaan, kasih fallback kalau field kosong
         text = current_q.get("teks_pertanyaan", "Pertanyaan tidak tersedia")
 
         q_label = ctk.CTkLabel(
             card,
-            text=text,
+            text=text,  # tampilkan data pertanyaan dinamis
             font=("Arial Bold", 17),
             text_color="#000000",
             wraplength=320,
@@ -57,6 +60,7 @@ class QuestionFlowMixin:
         scale_frame.pack(pady=(6, 40))
 
         self.scale_buttons = []
+        # bikin tombol skor 0–5
         for i in range(6):
             btn = ctk.CTkButton(
                 scale_frame,
@@ -72,43 +76,53 @@ class QuestionFlowMixin:
             btn.pack(side="left", padx=4)
             self.scale_buttons.append(btn)
 
+        # kalau pertanyaan ini sudah pernah dijawab, auto-select jawabannya
         if self.current_question < len(self.answers):
             self.select_scale(self.answers[self.current_question])
+            # kalau sudah di pertanyaan terakhir, ubah tombol jadi "Submit"
             if self.current_question >= len(self.questions) - 1:
                 self.next_button.configure(text="Submit")
         else:
+            # set default None sebelum user pilih jawaban
             self.selected_value = None
             self.next_button.configure(text="Lanjut")
 
+        # disable tombol kembali di pertanyaan pertama
         if self.current_question == 0:
             self.prev_button.configure(state="disabled")
         else:
             self.prev_button.configure(state="normal")
 
     def select_scale(self, value):
+        """Tandai skor yang dipilih dan update warna tombol."""
         self.selected_value = value
         for i, btn in enumerate(self.scale_buttons):
             btn.configure(fg_color="#2d4373" if i == value else "#3b5998")
 
     def next_question(self):
+        # kalau belum pilih jawaban, nggak boleh lanjut
         if self.selected_value is None:
             messagebox.showwarning("Peringatan", "Mohon pilih jawaban terlebih dahulu")
             return
 
+        # simpan jawaban untuk pertanyaan saat ini
         if self.current_question < len(self.answers):
             self.answers[self.current_question] = self.selected_value
         else:
             self.answers.append(self.selected_value)
 
+        # kalau sudah di pertanyaan terakhir, langsung submit
         if self.current_question >= len(self.questions) - 1:
             self.submit_answers()
             return
 
+        # pindah ke pertanyaan berikutnya
         self.current_question += 1
         self.selected_value = None
         self.show_question_card()
 
     def previous_question(self):
+        # mundur satu pertanyaan kalau belum di indeks 0
         if self.current_question > 0:
             self.current_question -= 1
             self.selected_value = None

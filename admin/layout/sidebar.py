@@ -13,22 +13,6 @@ def build_sidebar(root, on_menu_click):
         sidebar, text="Dashboard", font=("Arial Bold", 24), text_color="white"
     ).pack(pady=(30, 40), padx=20)
 
-    search_frame = ctk.CTkFrame(sidebar, fg_color="transparent")
-    search_frame.pack(fill="x", padx=20, pady=(0, 30))
-
-    search_entry = ctk.CTkEntry(
-        search_frame,
-        placeholder_text="🔍 Search",
-        height=35,
-        fg_color="#8cb4d9",
-        border_width=2,
-        border_color="#a8c5e0",
-        text_color="#1a4d7a",
-        placeholder_text_color="#4a7ba7",
-        corner_radius=8,
-    )
-    search_entry.pack(fill="x")
-
     menu_items = [
         ("Pasien", "👥"),
         ("Dokter", "👨‍⚕️"),

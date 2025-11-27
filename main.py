@@ -1,45 +1,45 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-# pastikan ini sesuai dengan paket yang sudah kamu buat tadi
 from loginmobile import MobileLoginAppFlexible
 from logindesktop import DesktopLoginApp
 
 
-class MainApp:
+class MainApp:  # class untuk komunikasi ctk
     def __init__(self):
-        ctk.set_appearance_mode("light")
-        ctk.set_default_color_theme("blue")
+        ctk.set_appearance_mode("light")  # tema utama window
+        ctk.set_default_color_theme("blue")  # tema aplikasi
 
-        # root window utama
-        self.window = ctk.CTk()
-        self.window.title("Mental Health Monitoring System")
+        self.window = ctk.CTk()  # ini manggil ctk
+        self.window.title("Mental Health Monitoring System")  # judul window
 
-        # ukuran awal, tapi bisa di-resize
-        self.window.geometry("900x600")
-        self.window.minsize(700, 480)
-        self.window.configure(fg_color="white")
+        self.window.geometry("900x600")  # ukuran awal window
+        self.window.minsize(700, 480)  # ukuran window minimal terbesar
+        self.window.configure(fg_color="white")  # warna back window
 
-        # ----- CANVAS BACKGROUND (RESPONSIVE) -----
-        self.canvas = ctk.CTkCanvas(
-            self.window,
-            bg="white",
-            highlightthickness=0,
+        self.canvas = ctk.CTkCanvas(  # bikin canvas
+            self.window,  # panggil ctk
+            bg="white",  # bikin canvas warna putih
+            highlightthickness=0,  # ketebalan canvas
         )
-        self.canvas.pack(fill="both", expand=True)
+        self.canvas.pack(
+            fill="both", expand=True
+        )  # pack (menaruh di dalam window utama), both nenperbolehkan canvas untuk diperbesar ke x, y
+        # expand memperbesar ke segala arah
 
-        # redraw background saat window di-resize
-        self.window.bind("<Configure>", self.on_resize)
+        # self.window.bind("<Configure>", self.on_resize) # bind python cek apakah ada perubahan ukuran window
+        # #kalau ada semua canvas di window ter resize sesuai ukuran window sekarang
 
-        # ----- CONTENT FRAME DI ATAS CANVAS -----
-        self.content_frame = ctk.CTkFrame(self.window, fg_color="transparent")
-        self.content_frame.place(relx=0.5, rely=0.5, anchor="center")
+        self.content_frame = ctk.CTkFrame(
+            self.window, fg_color="transparent"
+        )  # bikin frame untuk menampung semua content
+        self.content_frame.place(
+            relx=0.5, rely=0.5, anchor="center"
+        )  # agar semua content otomatis center
+        # rel = relative jadi kalau window berubah posisinya menyesuaikan
 
         self.build_content()
 
-    # =====================================================================
-    #  UI CONTENT (judul + 2 button)
-    # =====================================================================
     def build_content(self):
         # frame dalam biar tampak seperti card
         card = ctk.CTkFrame(self.content_frame, fg_color="white", corner_radius=16)
@@ -81,9 +81,9 @@ class MainApp:
             height=44,
             font=("Arial Bold", 13),
             fg_color="#3b5998",
-            hover_color="#2d4373",
+            hover_color="#2d4373",  # diarahkan kursor mouse warnanya berubah
             corner_radius=10,
-            command=self.open_pasien_login,
+            command=self.open_pasien_login,  # saat button di klik apa yang terjadi
         )
         pasien_btn.pack(side="left", padx=8, pady=6)
 
@@ -100,93 +100,29 @@ class MainApp:
         )
         dokter_btn.pack(side="left", padx=8, pady=6)
 
-        hint_label = ctk.CTkLabel(
-            card,
-            text="Mode pasien menggunakan tampilan mobile\n"
-            "(393x852) seperti yang sudah kamu buat.",
-            font=("Arial", 10),
-            text_color="#999999",
-            justify="center",
-        )
-        hint_label.pack(padx=20, pady=(0, 16))
-
-    # =====================================================================
-    #  CANVAS RESPONSIVE BACKGROUND
-    # =====================================================================
-    def on_resize(self, event):
-        """Redraw background shapes saat window di-resize."""
-        # cegah saat belum fully init
-        if event.widget is not self.window:
-            return
-
-        self.canvas.delete("all")
-
-        w = event.width
-        h = event.height
-
-        # sedikit margin
-        margin = 0
-
-        # lingkaran biru besar di kiri bawah
-        circle1_size = int(w * 0.9)
-        self.canvas.create_oval(
-            -int(w * 0.25),
-            int(h * 0.35),
-            -int(w * 0.25) + circle1_size,
-            int(h * 0.35) + circle1_size,
-            fill="#3b5998",
-            outline="",
-        )
-
-        # lingkaran biru muda di kanan atas
-        circle2_size = int(w * 0.8)
-        self.canvas.create_oval(
-            int(w * 0.45),
-            -int(h * 0.4),
-            int(w * 0.45) + circle2_size,
-            -int(h * 0.4) + circle2_size,
-            fill="#8b9dc3",
-            outline="",
-        )
-
-        # overlay putih tipis di tengah (biar halus)
-        self.canvas.create_rectangle(
-            margin,
-            int(h * 0.2),
-            w - margin,
-            h - margin,
-            fill="white",
-            outline="",
-        )
-
-    # =====================================================================
-    #  ACTION BUTTONS
-    # =====================================================================
     def open_pasien_login(self):
-        """Buka login mobile untuk pasien."""
         try:
-            # tutup main window, lalu buka login mobile
-            self.window.destroy()
-            app = MobileLoginAppFlexible()
-            app.run()
+            self.window.destroy()  # tutup window utama (sebelumny)
+            app = (
+                MobileLoginAppFlexible()
+            )  # panggil class di folder loginmobile file nya app_login_mobile
+            app.run()  # run class yang dipanggil
         except Exception as e:
             messagebox.showerror("Error", f"Gagal membuka login pasien.\n\n{e}")
 
     def open_dokter_login(self):
         """Buka login desktop untuk dokter/admin."""
         try:
-            # tutup main window, lalu buka login desktop
-            self.window.destroy()
-            app = DesktopLoginApp()
+            self.window.destroy()  # tutup window utama (sebelumny)
+            app = (
+                DesktopLoginApp()
+            )  # panggil class di folder logindesktop file nya app_login_desktop
             app.run()
         except Exception as e:
             messagebox.showerror("Error", f"Gagal membuka login dokter/admin.\n\n{e}")
 
-    # =====================================================================
-    #  MAINLOOP
-    # =====================================================================
     def run(self):
-        self.window.mainloop()
+        self.window.mainloop()  # run dan di hold sampai user melakukan interaksi dengan program
 
 
 if __name__ == "__main__":

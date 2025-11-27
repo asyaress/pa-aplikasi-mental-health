@@ -97,7 +97,7 @@ class PatientTableMixin:
             "Tanggal Konsul",
             "Aksi",
         ]
-        col_widths = [200, 250, 150, 150, 170, 130, 120]
+        col_widths = [200, 250, 150, 150, 170, 130, 120]  # px
 
         for i, h in enumerate(headers):
             label = ctk.CTkLabel(
@@ -195,7 +195,7 @@ class PatientTableMixin:
 
             # Aksi
             action_frame = ctk.CTkFrame(row_frame, fg_color="transparent")
-            action_frame.pack(side="left", padx=(5,5))
+            action_frame.pack(side="left", padx=(5, 5))
 
             ctk.CTkButton(
                 action_frame,
@@ -220,7 +220,9 @@ class PatientTableMixin:
             ).pack(side="left", padx=2)
 
             # tombol 📅 hanya kalau sudah 14/14 dan belum ada tanggal_konsul
-            if selesai_2minggu and not tanggal_konsul:
+            if (
+                selesai_2minggu and not tanggal_konsul
+            ):  # selesai2minnggu true, tanggal konsul belum ada flase -> true
                 ctk.CTkButton(
                     action_frame,
                     text="📅",
@@ -231,30 +233,6 @@ class PatientTableMixin:
                     hover_color="#f97316",
                     command=self.create_set_konsul_handler(row_data),
                 ).pack(side="left", padx=2)
-
-    # ----- Search -----
-    def enter_pressed(self, event):
-        keyword = self.search_entry.get()
-        self.search_patient(keyword)
-
-    def search_patient(self, keyword):
-        keyword = keyword.strip()
-
-        if keyword == "":
-            self.render_table(self.patients_data)
-            return
-
-        result = []
-        keyword_lower = keyword.lower()
-        for p in self.patients_data:
-            nama = (p.get("nama") or "").lower()
-            if keyword_lower in nama:
-                result.append(p)
-
-        if not result:
-            messagebox.showinfo("Hasil", "Pasien tidak ditemukan")
-
-        self.render_table(result)
 
     # ----- Badge warna kategori -----
     def badge_colour(self, kategori):

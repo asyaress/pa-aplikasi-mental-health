@@ -14,7 +14,7 @@ class PasienDashboard(
     QuestionFlowMixin,
     CompletedStateMixin,
     ScoringMixin,
-):
+):  # ambil semua class di folder pasien
     def __init__(self, user_data):
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
@@ -32,7 +32,9 @@ class PasienDashboard(
         self.nama_dokter = user_data.get("nama_dokter", "-")
 
         # statistik check-in & info pasien
-        self.total_checkin, self.today_already_filled = self.get_checkin_stats()
+        self.total_checkin, self.today_already_filled = (
+            self.get_checkin_stats()
+        )  # ambil data total dan sudah isi hari ini (true/false)
         self.tanggal_konsul = self.get_tanggal_konsul()
 
         # kalau belum 14 tapi hari ini sudah isi -> keluar
@@ -46,7 +48,9 @@ class PasienDashboard(
             return
 
         # pertanyaan WHO-5
-        self.questions = self.load_questions()
+        self.questions = (
+            self.load_questions()
+        )  # ambil pertanyaan dan sort by nomor urut di item_pertanyaan.json
         self.current_question = 0
         self.answers = []
         self.selected_value = None
@@ -54,7 +58,7 @@ class PasienDashboard(
         # UI dasar
         self.build_base_layout()
 
-        # kalau program selesai -> langsung tampilan selesai
+        # kalau sudah 14x muncul tanggal konsul
         if self.total_checkin >= 14:
             self.show_completed_state()
         else:
