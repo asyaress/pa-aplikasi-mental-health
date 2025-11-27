@@ -39,20 +39,57 @@ class DesktopLoginLogicMixin:
         role_id = user["id_role"]
 
         if role_id == 1:
-            # TODO: Dashboard Admin
-            pass
+            # ADMIN
+            self.open_admin_dashboard(user)
         elif role_id == 2:
+            # DOKTER
             self.open_dokter_dashboard(user)
         elif role_id == 3:
+            # PASIEN
             self.open_pasien_dashboard(user)
         else:
             messagebox.showerror("Error", "Invalid user role")
+
+    # ---------- Dashboard Admin ----------
+
+    def open_admin_dashboard(self, user):
+        try:
+            # sesuai dengan class yang kamu punya: AdminApp di admin/app.py
+            from admin.app import AdminApp
+
+            print("\nMembuka Admin Dashboard...")
+            print(f"   Admin: {user.get('nama', user.get('username'))}")
+
+            # sembunyikan window login
+            self.window.withdraw()
+
+            # jalankan dashboard admin
+            app = AdminApp(user)
+            app.run()  # akan block sampai window admin ditutup
+
+            print("\n👋 Dashboard admin ditutup, kembali ke login.")
+            # setelah admin window ditutup, tampilkan lagi window login
+            self.window.deiconify()
+
+        except ImportError as e:
+            print("\nError saat import dashboard admin:")
+            print(f"   Detail: {e}")
+            messagebox.showerror(
+                "Error",
+                "File / modul 'admin.app' tidak ditemukan!\n\n"
+                "Pastikan folder 'admin' dan file 'app.py' sudah ada,\n"
+                "dan di dalamnya terdapat class 'AdminApp'.",
+            )
+            self.window.deiconify()
+        except Exception as e:
+            print(f"\nError saat membuka dashboard admin: {e}")
+            messagebox.showerror("Error", f"Gagal membuka dashboard admin\n\n{str(e)}")
+            self.window.deiconify()
 
     # ---------- Dashboard Pasien ----------
 
     def open_pasien_dashboard(self, user):
         try:
-            # pakai paket pasien yang modular (seperti yang sudah kita buat)
             from pasien import PasienDashboard
 
             self.window.withdraw()
@@ -75,7 +112,6 @@ class DesktopLoginLogicMixin:
 
     def open_dokter_dashboard(self, user):
         try:
-            # import langsung dari modul dashboard dokter
             from dokter.dashboard import dokterDashboard
 
             print("\nMembuka Dokter Dashboard...")
@@ -105,4 +141,3 @@ class DesktopLoginLogicMixin:
         except Exception as e:
             print(f"\nError saat membuka dashboard dokter: {e}")
             self.window.deiconify()
-
