@@ -147,7 +147,7 @@ Class utama:
 Fitur utama AdminApp:
 
 - Menggunakan **CustomTkinter**:
-  - Sidebar biru (menu: *Pasien, Dokter, Questions, Role*).
+  - Sidebar biru (menu: _Pasien, Dokter, Questions, Role_).
   - ActionBar (search, tombol tambah).
   - `CTkScrollableFrame` untuk tabel data.
 
